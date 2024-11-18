@@ -16,7 +16,7 @@
 
         /* Left section styling */
         .left-section {
-            background-image: url('college1.jpeg');
+            background-image: url("{{ url_for('static', filename='college1.jpeg') }}");
             background-size: cover;
             background-position: center;
             background-repeat: no-repeat;
@@ -24,6 +24,7 @@
             height: 100vh;
             box-shadow: 2px 0 15px rgba(0, 0, 0, 0.1);
         }
+
 
         /* Right section styling */
         .right-section {
