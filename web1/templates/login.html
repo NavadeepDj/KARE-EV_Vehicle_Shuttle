@@ -205,28 +205,8 @@
                 .then((result) => {
                     console.log('User signed in with Google:', result.user);
                     
-                    // Send user data to Flask backend
-                    fetch('/store-user-session', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                        },
-                        body: JSON.stringify({
-                            email: result.user.email,
-                            displayName: result.user.displayName,
-                            uid: result.user.uid
-                        })
-                    })
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.success) {
-                            window.location.href = '/';  // Redirect to Flask dashboard route
-                        }
-                    })
-                    .catch(error => {
-                        console.error('Error storing session:', error);
-                        alert('Login failed. Please try again.');
-                    });
+                    // Redirect to the root directory after successful sign-in
+                    window.location.href = '/';
                 })
                 .catch(error => {
                     console.error('Google Sign-In error:', error.message);
@@ -238,7 +218,7 @@
             if (user) {
                 console.log('User is signed in:', user);
             } else if (window.location.pathname === '/dashboard.html') {
-                window.location.href = 'index.html';
+                window.location.href = '/';
             }
         });
     </script>
