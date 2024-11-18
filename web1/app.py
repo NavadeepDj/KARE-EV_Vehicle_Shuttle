@@ -1,7 +1,7 @@
 from flask import Flask, render_template, request, jsonify, session, redirect, url_for
 import smtplib
 from email.mime.text import MIMEText
-# from flask_cors import CORS
+from flask_cors import CORS
 # from dotenv import load_dotenv
 import os
 from flask_sqlalchemy import SQLAlchemy
@@ -14,7 +14,7 @@ from datetime import datetime
 # Fixed sender and recipient email details
 SENDER_EMAIL = "pernetiyeswanthkumar@gmail.com"
 SENDER_PASSWORD = "jlzo vwnx itbh coxv" #App password
-RECIPIENT_EMAIL = "navadeepmarella@gmail.com"
+RECIPIENT_EMAIL = "phrudayacharihruday@gmail.com"
 SMTP_SERVER = "smtp.gmail.com"
 SMTP_PORT = 587
 
@@ -23,7 +23,7 @@ app = Flask(__name__,
             static_folder='static',  # Custom location for static files
             template_folder='templates')  # Custom location for templates
 
-# CORS(app)  # Enable CORS for all routes
+CORS(app)  # Enable CORS for all routes
 
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///bookings.db'
 db = SQLAlchemy(app)
@@ -134,23 +134,23 @@ def logout():
     session.clear()
     return redirect(url_for('login2'))
 
-@app.route('/login2')
+@app.route('/login')
 def login2():
-    return render_template('login2.html')
+    return render_template('login.html')
 
-@app.route('/store-user-session', methods=['POST'])
-def store_user_session():
-    try:
-        user_data = request.json
+# @app.route('/store-user-session', methods=['POST'])
+# def store_user_session():
+#     try:
+#         user_data = request.json
         
-        # Store user data in session
-        session['user_email'] = user_data['email']
-        session['user_name'] = user_data['displayName']
-        session['user_id'] = user_data['uid']
+#         # Store user data in session
+#         session['user_email'] = user_data['email']
+#         session['user_name'] = user_data['displayName']
+#         session['user_id'] = user_data['uid']
         
-        return jsonify({'success': True}), 200
-    except Exception as e:
-        return jsonify({'success': False, 'error': str(e)}), 500
+#         return jsonify({'success': True}), 200
+#     except Exception as e:
+#         return jsonify({'success': False, 'error': str(e)}), 500
 
 @app.route('/change-password')
 def change_password():
