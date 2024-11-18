@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Booking History</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            background-image: url('https://your-professional-background-url.com');
+            background-size: cover;
+            background-position: center;
+            color: #333;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: -1;
+        }
+
+        .container {
+            background-color: rgba(255, 255, 255, 0.9); /* Slight transparency for professional feel */
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.3);
+            width: 100%;
+            max-width: 1200px; /* Increased width to accommodate more columns */
+        }
+
+        h1 {
+            margin-top: 0;
+            text-align: center;
+            color: #4CAF50; /* Professional green accent */
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th, td {
+            padding: 12px;
+            border: 1px solid #ddd;
+            text-align: left;
+            font-size: 16px;
+        }
+
+        th {
+            background-color: #4CAF50; /* Professional green for headers */
+            color: #fff;
+        }
+
+        td {
+            background-color: #fff;
+        }
+
+        tr:nth-child(even) td {
+            background-color: #f9f9f9; /* Alternating row colors for better readability */
+        }
+
+        tr:hover td {
+            background-color: #f1f1f1; /* Hover effect on rows */
+        }
+
+    </style>
+</head>
+<body>
+    <div class="overlay"></div>
+
+    <div class="container">
+        <h1>Booking History</h1>
+        <table id="booking-history">
+            <thead>
+                <tr>
+                    <th>Date of Booking</th>
+                    <th>Distance Traveled</th>
+                    <th>EV Vehicle</th>
+                    <th>Pickup Location</th>
+                    <th>Drop Location</th>
+                    <th>Payment Cost</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Booking rows will be populated here by JavaScript -->
+            </tbody>
+        </table>
+    </div>
+
+    <script>
+        const bookingHistoryData = [
+            { date: "2024-09-07", distance: "15 km", vehicle: "EV Vehicle 1", pickup: "5th Block", drop: "6th Block", cost: "$30.00" },
+            { date: "2024-09-08", distance: "20 km", vehicle: "EV Vehicle 2", pickup: "7th Block", drop: "8th Block", cost: "$40.00" }
+        ];
+
+        function populateTable() {
+            const tableBody = document.querySelector('#booking-history tbody');
+            tableBody.innerHTML = ''; // Clear existing rows
+
+            bookingHistoryData.forEach(item => {
+                const row = document.createElement('tr');
+                
+                const cellDate = document.createElement('td');
+                cellDate.textContent = item.date;
+                row.appendChild(cellDate);
+
+                const cellDistance = document.createElement('td');
+                cellDistance.textContent = item.distance;
+                row.appendChild(cellDistance);
+
+                const cellVehicle = document.createElement('td');
+                cellVehicle.textContent = item.vehicle;
+                row.appendChild(cellVehicle);
+
+                const cellPickup = document.createElement('td');
+                cellPickup.textContent = item.pickup;
+                row.appendChild(cellPickup);
+
+                const cellDrop = document.createElement('td');
+                cellDrop.textContent = item.drop;
+                row.appendChild(cellDrop);
+
+                const cellCost = document.createElement('td');
+                cellCost.textContent = item.cost;
+                row.appendChild(cellCost);
+
+                tableBody.appendChild(row);
+            });
+        }
+
+        // Initial table population
+        populateTable();
+    </script>
+</body>
+</html>

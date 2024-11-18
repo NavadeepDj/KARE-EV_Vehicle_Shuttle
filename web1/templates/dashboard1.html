@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Kalasalingam EV Vehicle Pickup and Drop</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY&callback=initMap" async defer></script>
+    <!-- QR Code JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <style>
+        /* Overall body styling with darker background image */
+        body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background-image: url('https://your-dark-image-url.com/ev-background-dark.jpg');
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    color: #e8eff2;
+}
+select {
+    margin-bottom: 15px;
+    padding: 10px;
+    border: none;
+    border-radius: 5px;
+    background-color: rgba(255, 255, 255, 0.2); /* Semi-transparent background */
+    color: #fff; /* Text color */
+    cursor: pointer; /* Pointer cursor on hover */
+    appearance: none; /* Removes default browser styling */
+    outline: none; /* Removes the default outline */
+}
+
+/* Custom arrow for dropdown */
+.select-container {
+    position: relative; /* Position for the custom arrow */
+}
+
+.select-arrow {
+    position: absolute;
+    right: 10px; /* Adjust based on your design */
+    top: 50%;
+    transform: translateY(-50%);
+    color: #fff; /* Color for the arrow */
+    pointer-events: none; /* Prevents interference with clicks */
+}
+
+/* Style when dropdown is focused */
+select:focus {
+    background-color: rgba(255, 255, 255, 0.3); /* Slightly brighter on focus */
+}
+
+/* To give a custom look to the dropdown options */
+select option {
+    background-color: rgba(0, 0, 0, 0.9); /* Dark background for options */
+    color: #fff; /* Text color for options */
+}
+
+
+.overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    z-index: -1;
+}
+
+.container {
+    display: flex;
+    background-color: rgba(0, 0, 0, 0.6);
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.5);
+    z-index: 1;
+    max-width: 1200px;
+    width: 90%;
+}
+
+.form-section {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+.map-section {
+    width: 300px;
+    height: 300px;
+    padding: 20px;
+    box-sizing: border-box;
+    position: relative;
+    background-color: rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+}
+
+#map {
+    width: 100%;
+    height: 100%;
+    border-radius: 8px;
+}
+
+form {
+    display: flex;
+    flex-direction: column;
+}
+
+label {
+    margin-bottom: 5px;
+    color: #f0f0f0;
+}
+
+select,
+input {
+    margin-bottom: 15px;
+    padding: 10px;
+    border: none;
+    border-radius: 5px;
+    background-color: rgba(255, 255, 255, 0.2);
+    color: #fff;
+}
+
+input[type="submit"] {
+    width: 100%;
+    padding: 10px;
+    background-color: #4CAF50;
+    color: rgb(14, 13, 13);
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+input[type="submit"]:hover {
+    background-color: #45a049;
+}
+
+.menu {
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    z-index: 2;
+}
+
+.menu .line {
+    width: 30px;
+    height: 3px;
+    background-color: #fff;
+    border-radius: 2px;
+    transition: background-color 0.3s ease;
+}
+
+.menu:hover .line {
+    background-color: #ddd;
+}
+
+.dropdown {
+    display: none;
+    position: absolute;
+    top: 30px;
+    left: 0;
+    background-color: rgba(255, 255, 255, 0.9);
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+    z-index: 1000;
+    min-width: 150px;
+}
+
+.dropdown a {
+    display: block;
+    padding: 10px;
+    text-decoration: none;
+    color: #333;
+    transition: background-color 0.3s ease;
+}
+
+.dropdown a:hover {
+    background-color: #f0f0f0;
+}
+
+.menu.active .dropdown {
+    display: block;
+}
+
+.vehicle-details {
+    margin-top: 20px;
+    padding: 20px;
+    background-color: rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    color: #fff;
+}
+
+.vehicle-details h3 {
+    margin: 0;
+    color: #ffeb3b; /* Highlighted color for vehicle details */
+}
+
+
+/* QR code section */
+.qr-section {
+    display: none; /* Hidden by default */
+    background-color: rgba(255, 255, 255, 0.9);
+    padding: 20px;
+    border-radius: 10px;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 3;
+    box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.5);
+    text-align: center;
+}
+
+.qr-section h2 {
+    margin-bottom: 20px;
+    color: #333;
+}
+
+/* Close button for QR code section */
+.close-btn {
+    margin-top: 20px;
+    padding: 10px;
+    background-color: #f44336;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.close-btn:hover {
+    background-color: #d32f2f;
+}
+
+@media (max-width: 768px) {
+    .container {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .map-section {
+        width: 100%;
+        height: 200px;
+        margin-top: 20px;
+    }
+}
+
+    </style>
+</head>
+<body>
+    <div class="overlay"></div>
+
+    <!-- Menu Button and Dropdown -->
+<div class="menu" onclick="toggleMenu()">
+    <div class="line"></div>
+    <div class="line"></div>
+    <div class="line"></div>
+    <div class="dropdown">
+        <a href="{{ url_for('booking_history') }}">Booking History</a>
+        <a href="#" onclick="showQR();">Payment Method</a>
+        <a href="{{ url_for('change_password') }}">Change Password</a>
+        <a href="#" onclick="handleLogout(); return false;">Logout</a>
+    </div>
+</div>
+
+    <div class="container">
+        <div class="form-section">
+            <h1>Dashboard</h1>
+            <p>Welcome, <?php echo $_SESSION['email']; ?>!</p>
+
+            <h2>Request a Pickup and Drop Service</h2>
+            <form id="request-form" >
+                <label for="ev-vehicle">Select EV Vehicle:</label>
+                <select id="ev-vehicle" name="ev_vehicle">
+                    <option value="1">EV Vehicle 1</option>
+                    <option value="2">EV Vehicle 2</option>
+                </select>
+
+                <label for="pickup-location">Pickup Location:</label>
+                <select id="pickup-location" name="pickup_location_id">
+                    <option value="5th-block">5th Block</option>
+                    <option value="7th-block">7th Block</option>
+                    <option value="8th-block">8th Block</option>
+                    <option value="9th-block">9th Block</option>
+                    <option value="10th-block">10th Block</option>
+                    <option value="11th-block">11th Block</option>
+                    <option value="MH-1">MH-1</option>
+                    <option value="MH-2">MH-2</option>
+                    <option value="MH-3">MH-3</option>
+                    <option value="admin-block">Admin Block</option>
+                    <option value="polytechnic-block">Polytechnic Block</option>
+                    <option value="girls-hostel">Girls Hostel</option>
+                    <option value="hospital-block">Hospital Block</option>
+                    <option value="main-gate">Main Gate</option>
+                </select>
+
+                <label for="drop-location">Drop Location:</label>
+                <select id="drop-location" name="drop_location_id">
+                    <option value="5th-block">5th Block</option>
+                    <option value="7th-block">7th Block</option>
+                    <option value="8th-block">8th Block</option>
+                    <option value="9th-block">9th Block</option>
+                    <option value="10th-block">10th Block</option>
+                    <option value="11th-block">11th Block</option>
+                    <option value="MH-1">MH-1</option>
+                    <option value="MH-2">MH-2</option>
+                    <option value="MH-3">MH-3</option>
+                    <option value="admin-block">Admin Block</option>
+                    <option value="polytechnic-block">Polytechnic Block</option>
+                    <option value="girls-hostel">Girls Hostel</option>
+                    <option value="hospital-block">Hospital Block</option>
+                    <option value="main-gate">Main Gate</option>
+                </select>
+
+                <input type="submit" value="Request Service">
+            </form>
+
+            <div class="vehicle-details">
+                <h3 id="vehicle-heading">EV Vehicle Details</h3>
+                <p id="vehicle-name">Select an EV vehicle to see details.</p>
+                <p id="vehicle-phone"></p>
+                <p id="vehicle-distance"></p> <!-- Added placeholder for distance -->
+            </div>
+        </div>
+        <script>
+            document.getElementById('request-form').addEventListener('submit', function(event) {
+                event.preventDefault();
+    
+                const requestData = {
+                    ev_vehicle: document.getElementById('ev-vehicle').value,
+                    pickup_location_id: document.getElementById('pickup-location').value,
+                    drop_location_id: document.getElementById('drop-location').value,
+                };
+    
+                fetch('/send-email', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(requestData),
+                })
+                .then(response => response.json())  // Parse JSON response
+                .then(data => {
+                    if (data.message) {
+                        alert(data.message);  // Success message
+                    } else if (data.error) {
+                        alert('Error: ' + data.error);  // Error message
+                    }
+                })
+                .catch(error => {
+                    alert('Error sending email: ' + error.message);  // Catch any unexpected errors
+                });
+            });
+        </script>
+        <div class="map-section">
+            <h2>Track EV Vehicle</h2>
+            <div id="map"></div>
+        </div>
+    </div>
+
+    <!-- QR Code Payment Section -->
+    <div id="qr-section" class="qr-section">
+        <h2>Scan to Pay</h2>
+        <div id="qrcode"></div>
+        <button class="close-btn" onclick="closeQR()">Close</button>
+    </div>
+
+    <script>
+        let map, marker;
+        const vehicleDetails = {
+            '1': {
+                name: 'John Doe',
+                phone: '+1234567890',
+                distance: 'Calculating...'
+            },
+            '2': {
+                name: 'Jane Smith',
+                phone: '+0987654321',
+                distance: 'Calculating...'
+            }
+        };
+
+        function initMap() {
+            const initialLocation = { lat: 9.55, lng: 77.7 };
+            map = new google.maps.Map(document.getElementById('map'), {
+                center: initialLocation,
+                zoom: 16,
+            });
+            marker = new google.maps.Marker({
+                position: initialLocation,
+                map: map,
+                title: 'EV Vehicle',
+            });
+
+            updateDriverLocation();
+        }
+
+        function updateDriverLocation() {
+            setInterval(function () {
+                fetch('/get_driver_location')
+                    .then(response => response.json())
+                    .then(data => {
+                        const latLng = new google.maps.LatLng(data.latitude, data.longitude);
+                        marker.setPosition(latLng);
+                        map.setCenter(latLng);
+                    })
+                    .catch(error => {
+                        console.error('Error fetching driver location:', error);
+                    });
+            }, 5000); // Update every 5 seconds
+        }
+
+        function calculateDistance() {
+            const directionsService = new google.maps.DirectionsService();
+
+            const pickupLocation = document.getElementById('pickup-location').value;
+            const dropLocation = document.getElementById('drop-location').value;
+
+            const request = {
+                origin: pickupLocation,
+                destination: dropLocation,
+                travelMode: 'DRIVING'
+            };
+
+            directionsService.route(request, function(result, status) {
+                if (status === 'OK') {
+                    const distance = result.routes[0].legs[0].distance.text;
+                    const selectedVehicle = document.getElementById('ev-vehicle').value;
+                    vehicleDetails[selectedVehicle].distance = distance;
+                    document.getElementById('vehicle-distance').innerText = `Distance to Travel: ${distance}`;
+                }
+            });
+        }
+
+        function updateVehicleDetails() {
+            const selectedVehicle = document.getElementById('ev-vehicle').value;
+            const details = vehicleDetails[selectedVehicle] || { name: 'No details available', phone: '', distance: '' };
+            const vehicleHeading = selectedVehicle === '1' ? 'EV Vehicle 1 Details' : 'EV Vehicle 2 Details';
+            document.getElementById('vehicle-heading').innerText = vehicleHeading;
+            document.getElementById('vehicle-name').innerText = `Name: ${details.name}`;
+            document.getElementById('vehicle-phone').innerText = `Phone Number: ${details.phone}`;
+            document.getElementById('vehicle-distance').innerText = `Distance to Travel: ${details.distance}`;
+        }
+
+        document.getElementById('ev-vehicle').addEventListener('change', updateVehicleDetails);
+        document.getElementById('pickup-location').addEventListener('change', calculateDistance);
+        document.getElementById('drop-location').addEventListener('change', calculateDistance);
+
+        window.onload = function() {
+            initMap();
+            updateVehicleDetails(); // Initialize vehicle details based on default selection
+        };
+
+        function toggleMenu() {
+            const menu = document.querySelector('.menu');
+            menu.classList.toggle('active');
+        }
+
+        function showQR() {
+            document.getElementById('qr-section').style.display = 'block';
+            const qrCode = new QRCode(document.getElementById('qrcode'), {
+                text: "https://your-payment-url.com",
+                width: 200,
+                height: 200,
+                colorDark : "#000000",
+                colorLight : "#ffffff",
+                correctLevel : QRCode.CorrectLevel.H
+            });
+        }
+
+        function closeQR() {
+            document.getElementById('qr-section').style.display = 'none';
+            document.getElementById('qrcode').innerHTML = ""; // Clear the QR code
+        }
+    </script>
+    <script type="module">
+        // Import Firebase auth
+        import { getAuth, signOut } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-auth.js";
+        
+        // Make handleLogout function global
+        window.handleLogout = function() {
+            const auth = getAuth();
+            signOut(auth).then(() => {
+                // Redirect to login2 page after Firebase logout
+                window.location.href = "{{ url_for('login2') }}";
+            }).catch((error) => {
+                console.error('Logout error:', error);
+            });
+        }
+
+        // Add click handler to logout link
+        document.addEventListener('DOMContentLoaded', function() {
+            const menuLogout = document.querySelector('.dropdown a[onclick*="handleLogout"]');
+            if (menuLogout) {
+                menuLogout.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    handleLogout();
+                });
+            }
+        });
+    </script>
+</body>
+</html>

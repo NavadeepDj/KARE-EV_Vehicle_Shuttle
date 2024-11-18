@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Booking History</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f5f5f5;
+        }
+        .booking-table {
+            width: 100%;
+            border-collapse: collapse;
+            background-color: white;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+        }
+        .booking-table th, .booking-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        .booking-table th {
+            background-color: #4CAF50;
+            color: white;
+        }
+        .booking-table tr:hover {
+            background-color: #f5f5f5;
+        }
+        .status {
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 0.9em;
+        }
+        .status.pending {
+            background-color: #ffd700;
+        }
+        .status.completed {
+            background-color: #90EE90;
+        }
+        .back-button {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <a href="/" class="back-button">Back to Dashboard</a>
+    <h1>Booking History</h1>
+    <table class="booking-table">
+        <thead>
+            <tr>
+                <th>Booking ID</th>
+                <th>Vehicle</th>
+                <th>Pickup Location</th>
+                <th>Drop Location</th>
+                <th>Date & Time</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for booking in bookings %}
+            <tr>
+                <td>#{{ booking.id }}</td>
+                <td>{{ booking.ev_vehicle }}</td>
+                <td>{{ booking.pickup_location }}</td>
+                <td>{{ booking.drop_location }}</td>
+                <td>{{ booking.timestamp.strftime('%Y-%m-%d %H:%M:%S') }}</td>
+                <td><span class="status {{ booking.status.lower() }}">{{ booking.status }}</span></td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html> 

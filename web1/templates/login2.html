@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kalasalingam EV Vehicle Pickup and Drop</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            display: flex;
+            height: 100vh;
+            background: linear-gradient(to right, #f8fafc, #eef2f3);
+        }
+
+        /* Left section styling */
+        .left-section {
+            background-image: url('college1.jpeg');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            width: 60%;
+            height: 100vh;
+            box-shadow: 2px 0 15px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Right section styling */
+        .right-section {
+            width: 40%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        /* Form container styling */
+        .form-container {
+            background-color: rgba(255, 255, 255, 0.9);
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+            animation: fadeIn 1.5s;
+        }
+
+        /* Animation for smooth appearance */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Form elements */
+        .form-container input[type="email"],
+        .form-container input[type="password"] {
+            width: 100%;
+            padding: 12px;
+            margin: 15px 0;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            box-sizing: border-box;
+            font-size: 16px;
+        }
+
+        .form-container input[type="submit"] {
+            background-color: #4CAF50;
+            color: white;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .form-container input[type="submit"]:hover {
+            background-color: #45a049;
+        }
+
+        /* Google Sign-In button */
+        #google-signin-btn {
+            background-color: #4285F4;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 15px;
+            width: 100%;
+            transition: background-color 0.3s ease;
+        }
+
+        #google-signin-btn:hover {
+            background-color: #357ae8;
+        }
+
+        /* Login message */
+        .message {
+            color: red;
+            font-size: 14px;
+            margin-top: 10px;
+        }
+
+        h1 {
+            margin-bottom: 25px;
+            color: #333;
+            font-size: 28px;
+        }
+
+        label {
+            display: block;
+            text-align: left;
+            font-size: 14px;
+            color: #555;
+            margin-top: 10px;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            body {
+                flex-direction: column;
+            }
+
+            .left-section {
+                display: none;
+            }
+
+            .right-section {
+                width: 100%;
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    {% if session.get('user_email') %}
+        <script>
+            window.location.href = "{{ url_for('dashboard') }}";
+        </script>
+    {% endif %}
+    <div class="left-section"></div>
+
+    <div class="right-section">
+        <div class="form-container">
+            <h1>Login</h1>
+            <form id="login-form">
+                <label for="email">Email:</label>
+                <input type="email" id="email" name="email" placeholder="Register No" required>
+
+                <label for="password">Password:</label>
+                <input type="password" id="password" name="password" placeholder="Password" required>
+
+                <input type="submit" value="Sign In">
+            </form>
+            <button id="google-signin-btn">Sign in with Google</button>
+            <div class="message" id="login-message"></div>
+        </div>
+    </div>
+
+    <!-- Firebase SDK -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-app.js";
+        import { getAuth, signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-auth.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyCHgCD7FhFlpf6kq74-rWoy5N8L5zGQqVg",
+            authDomain: "my-csp-cf5fd.firebaseapp.com",
+            projectId: "my-csp-cf5fd",
+            storageBucket: "my-csp-cf5fd.appspot.com",
+            messagingSenderId: "275663630843",
+            appId: "1:275663630843:web:e2b9227e5e4162416e5b5e"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+
+        document.getElementById('login-form').addEventListener('submit', function (event) {
+            event.preventDefault();
+
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+
+            signInWithEmailAndPassword(auth, email, password)
+                .then(() => {
+                    alert('Login successful!');
+                    window.location.href = 'dashboard.html';
+                })
+                .catch(error => {
+                    document.getElementById('login-message').innerText = 'Invalid email or password.';
+                    console.error('Login error:', error.message);
+                });
+        });
+
+        document.getElementById('google-signin-btn').addEventListener('click', function () {
+            const provider = new GoogleAuthProvider();
+
+            signInWithPopup(auth, provider)
+                .then((result) => {
+                    console.log('User signed in with Google:', result.user);
+                    
+                    // Send user data to Flask backend
+                    fetch('/store-user-session', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            email: result.user.email,
+                            displayName: result.user.displayName,
+                            uid: result.user.uid
+                        })
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            window.location.href = '/';  // Redirect to Flask dashboard route
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error storing session:', error);
+                        alert('Login failed. Please try again.');
+                    });
+                })
+                .catch(error => {
+                    console.error('Google Sign-In error:', error.message);
+                    alert('Google Sign-In failed. Please try again.');
+                });
+        });
+
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                console.log('User is signed in:', user);
+            } else if (window.location.pathname === '/dashboard.html') {
+                window.location.href = 'index.html';
+            }
+        });
+    </script>
+</body>
+
+</html>

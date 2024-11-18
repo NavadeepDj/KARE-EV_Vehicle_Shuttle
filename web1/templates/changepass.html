@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Change Password</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background-image: url('https://your-dark-image-url.com/ev-background-dark.jpg');
+            background-size: cover;
+            background-position: center;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            color: #fff;
+        }
+
+        .container {
+            background-color: rgba(0, 0, 0, 0.6);
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.5);
+            max-width: 400px;
+            width: 90%;
+        }
+
+        h1 {
+            text-align: center;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+        }
+
+        label {
+            margin-bottom: 5px;
+        }
+
+        input[type="password"], input[type="submit"] {
+            margin-bottom: 15px;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            background-color: rgba(255, 255, 255, 0.2);
+            color: #fff;
+        }
+
+        input[type="submit"] {
+            background-color: #4CAF50;
+            cursor: pointer;
+        }
+
+        input[type="submit"]:hover {
+            background-color: #45a049;
+        }
+
+        .message {
+            color: #ffeb3b;
+            text-align: center;
+        }
+
+        .menu {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            z-index: 2;
+        }
+
+        .menu .line {
+            width: 30px;
+            height: 3px;
+            background-color: #fff;
+            border-radius: 2px;
+            transition: background-color 0.3s ease;
+        }
+
+        .menu:hover .line {
+            background-color: #ddd;
+        }
+
+        .dropdown {
+            display: none;
+            position: absolute;
+            top: 30px;
+            left: 0;
+            background-color: rgba(255, 255, 255, 0.9);
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+            z-index: 1000;
+            min-width: 150px;
+        }
+
+        .dropdown a {
+            display: block;
+            padding: 10px;
+            text-decoration: none;
+            color: #333;
+            transition: background-color 0.3s ease;
+        }
+
+        .dropdown a:hover {
+            background-color: #f0f0f0;
+        }
+
+        .menu.active .dropdown {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <!-- Add Menu Button and Dropdown -->
+    <div class="menu" onclick="toggleMenu()">
+        <div class="line"></div>
+        <div class="line"></div>
+        <div class="line"></div>
+        <div class="dropdown">
+            <a href="{{ url_for('booking_history') }}">Booking History</a>
+            <a href="#" onclick="showQR();">Payment Method</a>
+            <a href="{{ url_for('change_password') }}">Change Password</a>
+            <a href="#" onclick="handleLogout(); return false;">Logout</a>
+        </div>
+    </div>
+
+    <div class="container">
+        <h1>Change Password</h1>
+        <form id="change-password-form">
+            <label for="current-password">Current Password:</label>
+            <input type="password" id="current-password" name="current-password" required>
+
+            <label for="new-password">New Password:</label>
+            <input type="password" id="new-password" name="new-password" required>
+
+            <label for="confirm-password">Confirm New Password:</label>
+            <input type="password" id="confirm-password" name="confirm-password" required>
+
+            <input type="submit" value="Change Password">
+        </form>
+        <div class="message" id="message"></div>
+        
+        <!-- Add a back button -->
+        <a href="{{ url_for('dashboard') }}" style="
+            display: inline-block;
+            margin-top: 20px;
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            text-align: center;
+        ">Back to Dashboard</a>
+    </div>
+
+    <script>
+        document.getElementById('change-password-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            const currentPassword = document.getElementById('current-password').value;
+            const newPassword = document.getElementById('new-password').value;
+            const confirmPassword = document.getElementById('confirm-password').value;
+            const messageDiv = document.getElementById('message');
+            const savedPassword = localStorage.getItem('password') || "1122"; // default password
+
+            // Check if current password is correct
+            if (currentPassword !== savedPassword) {
+                messageDiv.innerText = "Current password is incorrect.";
+                messageDiv.style.color = "red";
+                return;
+            }
+
+            // Check if new password and confirmation match
+            if (newPassword !== confirmPassword) {
+                messageDiv.innerText = "New password and confirmation do not match.";
+                messageDiv.style.color = "red";
+                return;
+            }
+
+            // Strong password validation
+            const passwordRegex = /^(?=.[a-z])(?=.[A-Z])(?=.\d)(?=.[@$!%?&])[A-Za-z\d@$!%?&]{8,}$/;
+            if (!passwordRegex.test(newPassword)) {
+                messageDiv.innerText = "New password must be at least 8 characters long, contain a number, an uppercase letter, a lowercase letter, and a special character.";
+                messageDiv.style.color = "red";
+                return;
+            }
+
+            // Store the new password
+            localStorage.setItem('password', newPassword);
+
+            // Display success message and reset the form
+            messageDiv.innerText = "Password changed successfully!";
+            messageDiv.style.color = "green";
+
+            // Optionally, redirect the user after password change
+            setTimeout(() => {
+                window.location.href = 'login.html'; // Redirect to login page or dashboard
+            }, 2000);
+
+            document.getElementById('change-password-form').reset();
+        });
+
+        function toggleMenu() {
+            const menu = document.querySelector('.menu');
+            menu.classList.toggle('active');
+        }
+    </script>
+</body>
+</html>

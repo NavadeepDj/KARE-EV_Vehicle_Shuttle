@@ -1,0 +1,30 @@
+Date: 29/9/2024
+Time: 15:16
+Phone Number: +916304433002
+Message: Hello, this message is sent instantly from Python!
+--------------------
+Date: 29/9/2024
+Time: 15:17
+Phone Number: +916304433002
+Message: Hello, this message is sent instantly from Python!
+--------------------
+Date: 30/9/2024
+Time: 23:19
+Phone Number: +916304433002
+Message: Hello, this message is sent instantly from Python!
+--------------------
+Date: 30/9/2024
+Time: 23:21
+Phone Number: +916304433002
+Message: Hello, this message is sent instantly from Python!
+--------------------
+Date: 30/9/2024
+Time: 23:28
+Phone Number: +916304433002
+Message: Hello, this message is sent from Python!
+--------------------
+Date: 30/9/2024
+Time: 23:29
+Phone Number: +916304433002
+Message: Hello, this message is sent from Python!
+--------------------
